@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:alpine as builder
 
 RUN echo && \
     apk update && \
@@ -6,6 +6,12 @@ RUN echo && \
     go get github.com/ekanite/ekanite && \
     go install github.com/ekanite/...
 
+FROM alpine:latest
+
+# copy our built binary
+COPY --from=builder /go/bin/ekanited /usr/bin/ekanited
+
+# add our beautiful bootstrap script
 ADD run.sh /run.sh
 RUN chmod +x /run.sh
 
